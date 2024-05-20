@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "630499026205",
+    "project_id": "learning-1fe92",
+    "storage_bucket": "learning-1fe92.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:630499026205:android:f81a3d2f6b20741d5fadf4",
+        "android_client_info": {
+          "package_name": "com.amer.learning"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXIGouhrUV9JSwrKdoFWi7YBUIsrsv9_4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
