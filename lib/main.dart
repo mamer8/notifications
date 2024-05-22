@@ -4,38 +4,36 @@ import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'firebase_options.dart';
 
-FirebaseMessaging messaging = FirebaseMessaging.instance;
+// the navigator key added to material app
+GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+// this id for local notification
 int id = 0;
 
 ///Cloud messaging step 1
-final navigatorKey = GlobalKey<NavigatorState>();
-FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
-NotificationDetails notificationDetails = NotificationDetails(
-    android: AndroidNotificationDetails(channel.id, channel.name,
-        channelDescription: channel.description,
-        importance: Importance.max,
-        icon: '@mipmap-mdpi/ic_launcher'));
-
+FirebaseMessaging messaging = FirebaseMessaging.instance;
+// handling firebase background notification
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-
   print(
-      "Handling a background message: notificationn  ${message.notification.toString()}");
+      "Handling a background message: notificationn  ${message.notification?.title}");
 }
 
+/// flutter local notification
+FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  /// Firebase Message settings //////
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  
 
   ///Cloud messaging step 2
   NotificationSettings settings = await messaging.requestPermission(
@@ -44,22 +42,30 @@ void main() async {
     sound: true,
   );
   print('User granted permission: ${settings.authorizationStatus}');
+
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  // firebase notification if app is opened
   FirebaseMessaging.onMessage.listen((event) {
-    print(
-        'on messsssssssssssdddssageeeeeeee${event.notification!.body!.toString()}');
+    print('on messageee${event.notification!.body!.toString()}');
+    print('on messageee data ${event.data.toString()}');
+    // show local notification
     showNotification(
-        body: event.notification!.body!, title: event.notification!.title);
+        body: event.notification!.body!,
+        title: event.notification!.title,
+        payload: event.data.toString());
   });
 
   // Handle the onMessageOpenedApp event
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    print('A new onMessageOpenedApp event was published!');
-   // navigatorKey.currentState?.pushNamed(Routes.notifications);
+    print('onMessageOpenedApp data ${message.data.toString()}');
+    print('onMessageOpenedApp route ${message.data['route']}');
+
+    // navigatorKey.currentState?.pushNamed(Routes.notifications);
   });
 
-  /////////////////
+//*************** local nottification settings  for android and IOS ************//
 
+// don't forget to add the app icon image to "android\app\src\main\res\drawable\app_icon.png"
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('app_icon');
 
@@ -77,15 +83,15 @@ void main() async {
 
   await flutterLocalNotificationsPlugin.initialize(
     initializationSettings,
-// هنا بنقوله لما توصلك الاشعارات حتعمل ايه
+// هنا بنقوله لما تضغط علي الاشعار حتعمل ايه
     onDidReceiveNotificationResponse: (NotificationResponse details) async {
-   //   navigatorKey.currentState?.pushNamed(Routes.notifications);
+      //   navigatorKey.currentState?.pushNamed(Routes.notifications);
 
       print('dddddddddddddddddddddddd');
-      print(details.toString());
       print(details.payload.toString());
     },
   );
+
   if (Platform.isAndroid) {
     flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
@@ -102,58 +108,20 @@ void main() async {
           sound: true,
         );
   }
-
-  @pragma('vm:entry-point')
-  void notificationTapBackground(NotificationResponse notificationResponse) {
-    // ignore: avoid_print
-    print('notification(${notificationResponse.id}) action tapped: '
-        '${notificationResponse.actionId} with'
-        ' payload: ${notificationResponse.payload}');
-    if (notificationResponse.input?.isNotEmpty ?? false) {
-      // ignore: avoid_print
-      print(
-          'notification action tapped with input: ${notificationResponse.input}');
-    }
-  }
-
-  /////////////////
-  //FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
-  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-    alert: true,
-    badge: true,
-    sound: true,
-  );
-
   getToken();
 
-// await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-//   alert: true,
-//   badge: true,
-//   sound: true,
-// );
-  //var token = await FirebaseMessaging.instance.getToken();
-
-  //print('ttttttttttttttttttttttttt ${token.toString()}');
-  runApp(
-    MyApp()
-  );
-
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      // add navigator key
+      navigatorKey: navigatorKey,
       theme: ThemeData(
-    
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
@@ -162,9 +130,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
- class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
 
   final String title;
 
@@ -175,37 +142,18 @@ class MyApp extends StatelessWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-   
     return const Scaffold(
-      
       body: Center(
-        
-        child:  Text(
-              'You have pushed the button this many times:',
-            ),
+        child: Text(
+          'You have pushed the button this many times:',
+        ),
       ),
-    // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
 
-
-
-Future<void> showNotification({required String body, title}) async {
-  const AndroidNotificationDetails androidNotificationDetails =
-      AndroidNotificationDetails('your channel id', 'your channel name',
-          channelDescription: 'your channel description',
-          importance: Importance.max,
-          priority: Priority.high,
-          ticker: 'ticker');
-  const NotificationDetails notificationDetails =
-      NotificationDetails(android: androidNotificationDetails);
-  await flutterLocalNotificationsPlugin
-      .show(id++, title, body, notificationDetails, payload: 'item x');
-}
-
 ///Cloud messaging step 3
-///token used for identify user in databse
+//token used for identify user in databse
 getToken() async {
   String? token = await messaging.getToken();
   print("token =  $token");
@@ -214,11 +162,25 @@ getToken() async {
   return token;
 }
 
+// show local notification when app is in forground
+Future<void> showNotification(
+    {required String body, title, String? payload}) async {
+  const AndroidNotificationDetails androidNotificationDetails =
+      AndroidNotificationDetails('your channel id', 'your channel name',
+          channelDescription: 'your channel description',
+          importance: Importance.max,
+          priority: Priority.high,
+          icon: 'app_icon',
+          ticker: 'ticker');
+  const NotificationDetails notificationDetails =
+      NotificationDetails(android: androidNotificationDetails);
+  await flutterLocalNotificationsPlugin
+      .show(id++, title, body, notificationDetails, payload: payload);
+}
 
-
-AndroidNotificationChannel channel = AndroidNotificationChannel(
-'high notiSound',"high_importance_channel_elm3"
-);
+// AndroidNotificationChannel channel = AndroidNotificationChannel(
+// 'high notiSound',"high_importance_channel_elm3"
+// );
 // AndroidNotificationChannel channel = AndroidNotificationChannel(
 // Preferences.instance.notiSound
 //     ? Preferences.instance.notiVisbrate
@@ -240,9 +202,3 @@ AndroidNotificationChannel channel = AndroidNotificationChannel(
 // playSound: Preferences.instance.notiSound,
 //  enableLights: Preferences.instance.notiLight,
 // );
-
-
-
-
-
-
