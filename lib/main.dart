@@ -22,7 +22,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print(
       "Handling a background message: notificationn  ${message.notification?.title}");
 }
-
+bool isWithNotification = false;
 /// flutter local notification
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -34,7 +34,17 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+RemoteMessage? initialMessage =
+      await FirebaseMessaging.instance.getInitialMessage();
 
+  if (initialMessage != null) {
+    
+    isWithNotification = true;
+  } 
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    isWithNotification = true;
+    navigatorKey.currentState?.pushNamed('/home2');
+  });
   ///Cloud messaging step 2
   NotificationSettings settings = await messaging.requestPermission(
     alert: true,
@@ -54,14 +64,15 @@ void main() async {
         title: event.notification!.title,
         payload: event.data.toString());
   });
-
+ 
   // Handle the onMessageOpenedApp event
-  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    print('onMessageOpenedApp data ${message.data.toString()}');
-    print('onMessageOpenedApp route ${message.data['route']}');
+  // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+  //   print('onMessageOpenedApp data ${message.data.toString()}');
+  //   print('onMessageOpenedApp route ${message.data['route']}');
+  //   isWithNotification = true;
 
-    // navigatorKey.currentState?.pushNamed(Routes.notifications);
-  });
+  //   // navigatorKey.currentState?.pushNamed(Routes.notifications);
+  // });
 
 //*************** local nottification settings  for android and IOS ************//
 
@@ -110,22 +121,30 @@ void main() async {
   }
   getToken();
 
-  runApp(MyApp());
+  runApp(MyApp(withNotification: isWithNotification,));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({super.key, required this.withNotification});
+  final bool withNotification;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      // add navigator key
       navigatorKey: navigatorKey,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      // Define routes
+      routes: {
+        '/': (context) => withNotification
+            ? const MyHomePage(title: 'Flutter Demo Home Page 222222')
+            : const MyHomePage(title: 'Flutter Demo Home Page 111'),
+        '/home2':(context) => const MyHomePage2(title: 'Flutter Demo Home Page 111')
+      },
+      initialRoute: '/',
     );
   }
 }
@@ -142,10 +161,29 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
+    return  Scaffold(
+      body: Center(
+        child: Text(
+         widget.title,
+        ),
+      ),
+    );
+  }
+}
+
+class MyHomePage2 extends StatefulWidget {
+  const MyHomePage2({super.key, required this.title});
+  final String title;
+  @override
+  State<MyHomePage2> createState() => _MyHomePage2State();
+}
+class _MyHomePage2State extends State<MyHomePage2> {
+  @override
+  Widget build(BuildContext context) {
     return const Scaffold(
       body: Center(
         child: Text(
-          'You have pushed the button this many times:',
+          'You have pushed the button this many times: 2222222222222222222',
         ),
       ),
     );
