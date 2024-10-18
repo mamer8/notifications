@@ -32,7 +32,9 @@ dependencies:
   cupertino_icons: ^1.0.2
   firebase_core: 
   firebase_messaging: 
-  
+  firebase_dynamic_links: 
+  firebase_analytics:
+  url_launcher: 
   flutter:
     sdk: flutter
   flutter_local_notifications: ^17.1.2

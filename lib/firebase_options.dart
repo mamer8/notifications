@@ -50,19 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCXIGouhrUV9JSwrKdoFWi7YBUIsrsv9_4',
-    appId: '1:630499026205:android:f81a3d2f6b20741d5fadf4',
-    messagingSenderId: '630499026205',
-    projectId: 'learning-1fe92',
-    storageBucket: 'learning-1fe92.appspot.com',
+    apiKey: 'AIzaSyCjl9PmvVLDH07DLISsCZueq-xmytxyn6I',
+    appId: '1:1010119917652:android:60f2c67e1c4f1c4b706dc1',
+    messagingSenderId: '1010119917652',
+    projectId: 'language-f2adb',
+    storageBucket: 'language-f2adb.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCeLaD5SLjyP8l1SbXO3DNnbWjiQtwdHIs',
-    appId: '1:630499026205:ios:368b78eb2c4b797a5fadf4',
-    messagingSenderId: '630499026205',
-    projectId: 'learning-1fe92',
-    storageBucket: 'learning-1fe92.appspot.com',
+    apiKey: 'AIzaSyBRbNaSqg-lBnJxhwrI6VYPc240tB_Ru2A',
+    appId: '1:1010119917652:ios:74e9c899ed07d571706dc1',
+    messagingSenderId: '1010119917652',
+    projectId: 'language-f2adb',
+    storageBucket: 'language-f2adb.appspot.com',
     iosBundleId: 'com.amer.learning',
   );
+
 }

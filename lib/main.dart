@@ -6,14 +6,18 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:learning/app_routes.dart';
 
 import 'firebase_options.dart';
+import 'my_app.dart';
 
 // the navigator key added to material app
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 // this id for local notification
 int id = 0;
+String notificationId = "0";
+String notificationType = "";
 
 ///Cloud messaging step 1
 FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -22,7 +26,9 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print(
       "Handling a background message: notificationn  ${message.notification?.title}");
 }
+
 bool isWithNotification = false;
+
 /// flutter local notification
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -34,17 +40,41 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-RemoteMessage? initialMessage =
-      await FirebaseMessaging.instance.getInitialMessage();
 
+  RemoteMessage? initialMessage =
+      await FirebaseMessaging.instance.getInitialMessage();
+//// الحتة دي مهمة جداااااااا
+  //// WHEN APP IS KILLED (NOT IN BACK GROUND) ///////////
+  // when app recieve a message
   if (initialMessage != null) {
-    
+//  change isWithNotification to true
     isWithNotification = true;
-  } 
+//    set notificationType and notificationId from message
+    notificationType = initialMessage.data['type'] ?? "";
+    notificationId = initialMessage.data['id'] ?? "-1";
+  }
+// the data will be like this
+/*
+ {
+    "message": {
+        "token": "d3h7CB28T0CmD_ocRozVF9:APA91bFXLglA_9Pzn4-pKi9uh9v4uZeLXX3H2smHsIGB57r-uo61ITlwdqyqZxrtGTlKImBWBare9g1YrmtR1-GbFyiz8hroYr9eH6Xme-RPWb432IrXq7FGdPz9FMg2XQHPgSkFUeQn",
+        "notification": {
+            "body": "This is an FCM notification message!",
+            "title": "FCM Message new"
+        },
+        "data": {
+            "id": "2121",
+            "type": "trip"
+        }
+    }
+}
+ */
+
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    isWithNotification = true;
-    navigatorKey.currentState?.pushNamed('/home2');
+   // we can check a notification data and go to the notification screen or trip details screen or product details screen
+    navigatorKey.currentState?.pushNamed(Routes.notificationRoute);
   });
+
   ///Cloud messaging step 2
   NotificationSettings settings = await messaging.requestPermission(
     alert: true,
@@ -64,15 +94,6 @@ RemoteMessage? initialMessage =
         title: event.notification!.title,
         payload: event.data.toString());
   });
- 
-  // Handle the onMessageOpenedApp event
-  // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-  //   print('onMessageOpenedApp data ${message.data.toString()}');
-  //   print('onMessageOpenedApp route ${message.data['route']}');
-  //   isWithNotification = true;
-
-  //   // navigatorKey.currentState?.pushNamed(Routes.notifications);
-  // });
 
 //*************** local nottification settings  for android and IOS ************//
 
@@ -96,7 +117,9 @@ RemoteMessage? initialMessage =
     initializationSettings,
 // هنا بنقوله لما تضغط علي الاشعار حتعمل ايه
     onDidReceiveNotificationResponse: (NotificationResponse details) async {
-      //   navigatorKey.currentState?.pushNamed(Routes.notifications);
+         // we can check a notification data and go to the notification screen or trip details screen or product details screen
+        // from details.payload it is = message.data = { "id": "2121", "type": "trip" }
+         navigatorKey.currentState?.pushNamed(Routes.notificationRoute);
 
       print('dddddddddddddddddddddddd');
       print(details.payload.toString());
@@ -120,74 +143,21 @@ RemoteMessage? initialMessage =
         );
   }
   getToken();
-
-  runApp(MyApp(withNotification: isWithNotification,));
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key, required this.withNotification});
-  final bool withNotification;
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      navigatorKey: navigatorKey,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      // Define routes
-      routes: {
-        '/': (context) => withNotification
-            ? const MyHomePage(title: 'Flutter Demo Home Page 222222')
-            : const MyHomePage(title: 'Flutter Demo Home Page 111'),
-        '/home2':(context) => const MyHomePage2(title: 'Flutter Demo Home Page 111')
-      },
-      initialRoute: '/',
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return  Scaffold(
-      body: Center(
-        child: Text(
-         widget.title,
-        ),
-      ),
-    );
-  }
-}
-
-class MyHomePage2 extends StatefulWidget {
-  const MyHomePage2({super.key, required this.title});
-  final String title;
-  @override
-  State<MyHomePage2> createState() => _MyHomePage2State();
-}
-class _MyHomePage2State extends State<MyHomePage2> {
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text(
-          'You have pushed the button this many times: 2222222222222222222',
-        ),
-      ),
-    );
-  }
+// pass our parameters to the screen
+  runApp(MyApp(
+    withNotification: isWithNotification,
+    notificationId: notificationId,
+    notificationtype: notificationType,
+  ));
+  // runApp(
+  //   MaterialApp(
+  //     title: 'Dynamic Links Example',
+  //     routes: <String, WidgetBuilder>{
+  //       '/': (BuildContext context) => MainScreen(),
+  //       '/H3Ed': (BuildContext context) => DynamicLinkScreen(), // ده اللينك اللي علي فاير بيز
+  //     },
+  //   ),
+  // );
 }
 
 ///Cloud messaging step 3
@@ -215,28 +185,3 @@ Future<void> showNotification(
   await flutterLocalNotificationsPlugin
       .show(id++, title, body, notificationDetails, payload: payload);
 }
-
-// AndroidNotificationChannel channel = AndroidNotificationChannel(
-// 'high notiSound',"high_importance_channel_elm3"
-// );
-// AndroidNotificationChannel channel = AndroidNotificationChannel(
-// Preferences.instance.notiSound
-//     ? Preferences.instance.notiVisbrate
-//         ? Preferences.instance.notiLight
-//             ? 'high notiVisbrate'
-//             : 'high notiLight'
-//         : 'high notiSound'
-//     : "high notielse", // id
-// Preferences.instance.notiSound
-//     ? Preferences.instance.notiVisbrate
-//         ? Preferences.instance.notiLight
-//             ? 'high_notiVisbrateTitle'
-//             : 'high_notiLightTitle'
-//         : 'high_notiSoundTitle'
-//     : "high_importance_channel_elm3", // title
-// description: "this notification tarek tube",
-// importance: Importance.high,
-// enableVibration: Preferences.instance.notiVisbrate,
-// playSound: Preferences.instance.notiSound,
-//  enableLights: Preferences.instance.notiLight,
-// );
