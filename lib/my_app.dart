@@ -16,7 +16,6 @@ class MyApp extends StatelessWidget {
   final bool withNotification;
   final String notificationId;
   final String notificationtype;
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -28,11 +27,8 @@ class MyApp extends StatelessWidget {
       ),
       onGenerateRoute: AppRoutes.onGenerateRoute,
       routes: {
-        '/': (context) =>
-        
-        // first check if there is a notification
-
-        
+        '/': (context) => 
+        // first check if there is a notification        
          withNotification
          // if there is a notification, check if it is a trip or product
             ? notificationtype == "trip"

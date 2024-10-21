@@ -19,23 +19,14 @@ class _MainScreenState extends State<MainScreen> {
       'is properly setup. Look at firebase_dynamic_links/README.md for more '
       'details.';
 
-  final String DynamicLink = 'https://example/helloworld';
+  final String DynamicLink = 'https://amerlearningapp.page.link/H3Ed';
   final String Link = 'https://amerlearningapp.page.link/H3Ed';
   // final String Link = 'https://flutterfiretests.page.link/MEGs';
 
   @override
   void initState() {
     super.initState();
-    initDynamicLinks();
-  }
-
-  Future<void> initDynamicLinks() async {
-    dynamicLinks.onLink.listen((dynamicLinkData) {
-      Navigator.pushNamed(context, dynamicLinkData.link.path);
-    }).onError((error) {
-      print('onLink error');
-      print(error.message);
-    });
+    initDynamicLink();
   }
 
   Future<void> _createDynamicLink(bool short) async {
@@ -44,7 +35,7 @@ class _MainScreenState extends State<MainScreen> {
     });
 
     final DynamicLinkParameters parameters = DynamicLinkParameters(
-      uriPrefix: 'https://amerlearningapp.page.link',
+      uriPrefix: 'https://amerlearningapp.page.link/H3Ed',
       // uriPrefix: 'https://flutterfiretests.page.link',
       longDynamicLink: Uri.parse(
         'https://flutterfiretests.page.link?efr=0&ibi=io.flutter.plugins.firebase.dynamiclinksexample&apn=io.flutter.plugins.firebase.dynamiclinksexample&imv=0&amv=0&link=https%3A%2F%2Fexample%2Fhelloworld&ofl=https://ofl-example.com',
@@ -74,18 +65,18 @@ class _MainScreenState extends State<MainScreen> {
       _isCreatingLink = false;
     });
   }
-
-  void initDynamicLinkss() async {
+///// importaaaaaannnnnnnnttt neeehhaaaallll
+  void initDynamicLink() async {
     print("fff");
-
     // Handle dynamic links if the app was opened with one
     final PendingDynamicLinkData? initialLink =
         await FirebaseDynamicLinks.instance.getInitialLink();
     final Uri? initialDeepLink = initialLink?.link;
-
     if (initialDeepLink != null) {
       print('Initial dynamic link: ${initialDeepLink.toString()}');
-      // Handle the initial dynamic link here (push new route, etc.)
+      print('Initial dynamic path: ${initialDeepLink.path.toString()}');
+       // ignore: use_build_context_synchronously
+       Navigator.pushNamed(context, initialDeepLink.path);
     }
 
     // Listen for dynamic links while the app is running

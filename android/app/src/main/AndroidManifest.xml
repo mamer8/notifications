@@ -44,8 +44,7 @@
              <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                
+                <category android:name="android.intent.category.BROWSABLE" />                
                 <!-- Replace with your Firebase Dynamic Links domain -->
                 <data android:scheme="https"
                       android:host="amerlearningapp.page.link" />  <!-- Use your Firebase dynamic link domain -->

@@ -8,8 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:learning/app_routes.dart';
 
+import 'dynamic_link.dart';
 import 'firebase_options.dart';
 import 'my_app.dart';
+import 'notification.dart';
 
 // the navigator key added to material app
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -40,7 +42,6 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
   RemoteMessage? initialMessage =
       await FirebaseMessaging.instance.getInitialMessage();
 //// الحتة دي مهمة جداااااااا
@@ -71,7 +72,7 @@ void main() async {
  */
 
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-   // we can check a notification data and go to the notification screen or trip details screen or product details screen
+    // we can check a notification data and go to the notification screen or trip details screen or product details screen
     navigatorKey.currentState?.pushNamed(Routes.notificationRoute);
   });
 
@@ -117,9 +118,9 @@ void main() async {
     initializationSettings,
 // هنا بنقوله لما تضغط علي الاشعار حتعمل ايه
     onDidReceiveNotificationResponse: (NotificationResponse details) async {
-         // we can check a notification data and go to the notification screen or trip details screen or product details screen
-        // from details.payload it is = message.data = { "id": "2121", "type": "trip" }
-         navigatorKey.currentState?.pushNamed(Routes.notificationRoute);
+      // we can check a notification data and go to the notification screen or trip details screen or product details screen
+      // from details.payload it is = message.data = { "id": "2121", "type": "trip" }
+      navigatorKey.currentState?.pushNamed(Routes.notificationRoute);
 
       print('dddddddddddddddddddddddd');
       print(details.payload.toString());
@@ -144,20 +145,22 @@ void main() async {
   }
   getToken();
 // pass our parameters to the screen
-  runApp(MyApp(
-    withNotification: isWithNotification,
-    notificationId: notificationId,
-    notificationtype: notificationType,
-  ));
-  // runApp(
-  //   MaterialApp(
-  //     title: 'Dynamic Links Example',
-  //     routes: <String, WidgetBuilder>{
-  //       '/': (BuildContext context) => MainScreen(),
-  //       '/H3Ed': (BuildContext context) => DynamicLinkScreen(), // ده اللينك اللي علي فاير بيز
-  //     },
-  //   ),
-  // );
+  // runApp(MyApp(
+  //   withNotification: isWithNotification,
+  //   notificationId: notificationId,
+  //   notificationtype: notificationType,
+  // ));
+  runApp(
+    MaterialApp(
+      title: 'Dynamic Links Example',
+      routes: <String, WidgetBuilder>{
+        '/': (BuildContext context) => MainScreen(),
+         '/notification': (BuildContext context) => NotificationScreen(),
+        '/H3Ed': (BuildContext context) =>
+            DynamicLinkScreen(), // ده اللينك اللي علي فاير بيز
+      },
+    ),
+  );
 }
 
 ///Cloud messaging step 3
@@ -165,7 +168,7 @@ void main() async {
 getToken() async {
   String? token = await messaging.getToken();
   print("token =  $token");
-
+  // messaging.deleteToken();
 //  Preferences.instance.setNotificationToken(value: token ?? '');
   return token;
 }

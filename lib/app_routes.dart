@@ -19,7 +19,6 @@ class Routes {
 
 class AppRoutes {
   static String route = '';
-
   static Route onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case Routes.initialRoute:
@@ -34,7 +33,6 @@ class AppRoutes {
         return MaterialPageRoute(
           builder: (context) => const NotificationScreen(),
         );
-     
       case Routes.productDetailsRoute:
         String id = settings.arguments as String;
 
