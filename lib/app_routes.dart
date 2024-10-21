@@ -9,8 +9,8 @@ import 'notification.dart';
 class Routes {
   static const String initialRoute = '/';
 
-  static const String productDetailsRoute = '/productDetailsRoute';
-  static const String notificationRoute = '/notificationRoute';
+  static const String productDetailsRoute = '/product';
+  static const String notificationRoute = '/notification';
   static const String homeRoute = '/homeRoute';
   static const String  tripDetailsRoute = '/tripDetailsRoute';
 

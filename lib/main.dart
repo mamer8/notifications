@@ -7,6 +7,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:learning/app_routes.dart';
+import 'package:learning/product_details.dart';
 
 import 'dynamic_link.dart';
 import 'firebase_options.dart';
@@ -145,23 +146,26 @@ void main() async {
   }
   getToken();
 // pass our parameters to the screen
-  // runApp(MyApp(
-  //   withNotification: isWithNotification,
-  //   notificationId: notificationId,
-  //   notificationtype: notificationType,
-  // ));
-  runApp(
-    MaterialApp(
-      title: 'Dynamic Links Example',
-      routes: <String, WidgetBuilder>{
-        '/': (BuildContext context) => MainScreen(),
-         '/notification': (BuildContext context) => NotificationScreen(),
-        '/H3Ed': (BuildContext context) =>
-            DynamicLinkScreen(), // ده اللينك اللي علي فاير بيز
-      },
-    ),
-  );
-}
+  runApp(MyApp(
+    withNotification: isWithNotification,
+    notificationId: notificationId,
+    notificationtype: notificationType,
+  ));
+//   runApp(
+//     MaterialApp(
+//       title: 'Dynamic Links Example',
+//       onGenerateRoute: AppRoutes.onGenerateRoute,
+//       routes: <String, WidgetBuilder>{
+//         '/': (BuildContext context) => MainScreen(),
+//         //  '/notification': (BuildContext context) => NotificationScreen(),
+   
+//         '/H3Ed': (BuildContext context) =>
+//             DynamicLinkScreen(), // ده اللينك اللي علي فاير بيز
+//       },
+//     ),
+//   );
+
+ }
 
 ///Cloud messaging step 3
 //token used for identify user in databse

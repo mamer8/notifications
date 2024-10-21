@@ -35,12 +35,12 @@ class _MainScreenState extends State<MainScreen> {
     });
 
     final DynamicLinkParameters parameters = DynamicLinkParameters(
-      uriPrefix: 'https://amerlearningapp.page.link/H3Ed',
+      uriPrefix: 'https://amerlearningapp.page.link',
       // uriPrefix: 'https://flutterfiretests.page.link',
       longDynamicLink: Uri.parse(
         'https://flutterfiretests.page.link?efr=0&ibi=io.flutter.plugins.firebase.dynamiclinksexample&apn=io.flutter.plugins.firebase.dynamiclinksexample&imv=0&amv=0&link=https%3A%2F%2Fexample%2Fhelloworld&ofl=https://ofl-example.com',
       ),
-      link: Uri.parse(DynamicLink),
+      link: Uri.parse('https://amerlearningapp.page.link/product?id=5'),
       androidParameters: const AndroidParameters(
         packageName: 'io.flutter.plugins.firebase.dynamiclinksexample',
         minimumVersion: 0,
@@ -65,6 +65,7 @@ class _MainScreenState extends State<MainScreen> {
       _isCreatingLink = false;
     });
   }
+
 ///// importaaaaaannnnnnnnttt neeehhaaaallll
   void initDynamicLink() async {
     print("fff");
@@ -72,11 +73,19 @@ class _MainScreenState extends State<MainScreen> {
     final PendingDynamicLinkData? initialLink =
         await FirebaseDynamicLinks.instance.getInitialLink();
     final Uri? initialDeepLink = initialLink?.link;
+    print('Initiallll link: ${initialLink.toString()}');
     if (initialDeepLink != null) {
       print('Initial dynamic link: ${initialDeepLink.toString()}');
       print('Initial dynamic path: ${initialDeepLink.path.toString()}');
-       // ignore: use_build_context_synchronously
-       Navigator.pushNamed(context, initialDeepLink.path);
+
+      if (initialDeepLink.toString().contains("product")) {
+        Uri uri = Uri.parse(initialDeepLink.toString());
+        String id = uri.queryParameters['id'] ?? "-1";
+
+        Navigator.pushNamed(context, initialDeepLink.path, arguments: id);
+      } else {
+        Navigator.pushNamed(context, initialDeepLink.path);
+      }
     }
 
     // Listen for dynamic links while the app is running
